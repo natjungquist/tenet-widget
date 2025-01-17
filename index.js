@@ -20,7 +20,12 @@ const __redirecturi = process.env.HOST_URI + "/auth";
 //app.use(cors());
 app.use(express.static(__dirname + "/src"));
 
-app.get(`/login`, function(req, res, next){
+app.get('/', function(req, res, next) {
+  console.log("/ url reached");
+  return "cc transfer meeting widget";
+})
+
+app.get('/login', function(req, res, next){
   console.log("Login token:");
   console.log(req.query.token);
   let prevToken = cache.get(req.query.token);
@@ -53,7 +58,7 @@ app.get('/auth_done', function(req, res, next){
   res.sendFile(__dirname + "/src/auth_done.html");
 })
 
-app.get(`/auth`, async function(req, res, next) {
+app.get('/auth', async function(req, res, next) {
   console.log(`/auth redirectURI: ${__redirecturi}`);
   let accessTokenResp = await fetch('https://webexapis.com/v1/access_token',{
       method: "POST",
@@ -78,9 +83,10 @@ app.get(`/auth`, async function(req, res, next) {
     console.warn('no login state to add to mem cache.');
   }
   console.log('auth_done');
-  res.redirect(`/auth_done`);
+  res.redirect('/auth_done');
 });
 
 app.listen(port, () => {
   console.log(`listening on ${port}`);
+  console.log(`/auth redirectURI: ${__redirecturi}`);
 });
