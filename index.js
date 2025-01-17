@@ -22,7 +22,7 @@ app.use(express.static(__dirname + '/src'))
 
 app.get('/', function (req, res, next) {
   console.log('/ url reached')
-  return 'cc transfer meeting widget'
+  res.status(200).send("cc meeting transfer widget")
 })
 
 app.get('/login', function (req, res, next) {
