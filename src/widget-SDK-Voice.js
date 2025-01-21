@@ -1,5 +1,7 @@
 import { Desktop } from '@wxcc-desktop/sdk'
 
+const HOST_URI = "https://tenet.c1ps.dev"
+
 const template = document.createElement('template')
 let loaded = false
 
@@ -86,7 +88,7 @@ template.innerHTML = `
         <fieldset class="fieldset">
           <legend><b>Transfer to Meeting</b></legend>
           <div>
-            <img id="loading-icon" src="${process.env.HOST_URI}/img/loading-1.gif" class="loading-icon"/>
+            <img id="loading-icon" src="${HOST_URI}/img/loading-1.gif" class="loading-icon"/>
             <div id="authorize-content" style="display:none;">
               <button class="button" id="authorize">Authorize</button>
             </div>
@@ -257,6 +259,8 @@ class myDesktopSDK extends HTMLElement {
     // Initiating desktop config
     // index.js
 
+    customLog("in init method")
+
     Desktop.config.init()
     try {
       // ************************** Event listeners ************************** \\
@@ -285,7 +289,7 @@ class myDesktopSDK extends HTMLElement {
 
       this.shadowRoot.getElementById('authorize').addEventListener('click', e => {
         this.showLoadingIcon('Authorizing in new window.')
-        const loginUrl = `${process.env.HOST_URI}/login?token=${myAgentService.webex.accessToken}`
+        const loginUrl = `${HOST_URI}/login?token=${myAgentService.webex.accessToken}`
         customLog(`loginUrl:${loginUrl}`)
         const loginWindow = window.open(loginUrl)
         let complete = false
@@ -294,7 +298,7 @@ class myDesktopSDK extends HTMLElement {
           if (loginWindow.closed) {
             customLog('The login window has been closed.')
             try {
-              const response = await fetch(`${process.env.HOST_URI}/poll_token?token=${myAgentService.webex.accessToken}`)
+              const response = await fetch(`${HOST_URI}/poll_token?token=${myAgentService.webex.accessToken}`)
               const json = await response.json()
               customLog(json)
               if (json.access_token) {
@@ -317,7 +321,7 @@ class myDesktopSDK extends HTMLElement {
         waitForWindowClosed()
       })
     } catch (e) {
-      customLog('init Error:', e)
+      customLog('init error:', e)
     }
   }
 
@@ -581,8 +585,14 @@ class myDesktopSDK extends HTMLElement {
 
   connectedCallback () {
     logger.info('in connectedcallback')
+    logger.info('host URI: ', HOST_URI)
     try {
       this.init()
+    } catch (e) {
+      customLog("init error", e)
+    }
+    
+    try {
       this.getAgentInfo()
       if (!loaded) {
         Cookies.get('access_token')
